@@ -11,6 +11,9 @@ public class Movement : MonoBehaviour
     float verticalInput;
     Vector3 moveDirection;
     Rigidbody rb;
+
+    public bool isMovement = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -21,7 +24,9 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        
         HandleInput();
+        
     }
 
     private void HandleInput()
@@ -38,7 +43,13 @@ public class Movement : MonoBehaviour
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        rb.MovePosition(transform.position + moveDirection.normalized * speed * Time.fixedDeltaTime);
+
+        isMovement = moveDirection.sqrMagnitude > 0.0001f;
+
+        if (isMovement)
+        {
+            rb.MovePosition(transform.position + moveDirection.normalized * speed * Time.fixedDeltaTime);
+        }
     }
 
 }

@@ -17,7 +17,8 @@ public class EnemyDetection : MonoBehaviour
             {
                 if (hit.transform.CompareTag("Player"))
                 {
-                    Debug.Log("Player spotted!");
+                    //Debug.Log("Player spotted!");
+                    GameManager.Instance?.PlayerCaught();
                 }
             }
         }

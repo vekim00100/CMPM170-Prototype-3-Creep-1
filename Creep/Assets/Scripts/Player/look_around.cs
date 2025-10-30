@@ -5,7 +5,7 @@ using UnityEngine;
 public class look_around : MonoBehaviour
 {
     public float sensX;
-    public float sensy;
+    public float sensY;
 
     public Transform orientation;
     float xRotation;
@@ -19,7 +19,7 @@ public class look_around : MonoBehaviour
     private void Update()
     {
         float mouseX = Input.GetAxis("Mouse X") * sensX * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * sensy * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * sensY * Time.deltaTime;
 
         yRotation += mouseX;
         xRotation -= mouseY;

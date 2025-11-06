@@ -1,51 +1,55 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using TMPro;
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("Lives")]
-    [SerializeField] int startingLives = 3;
-    public int Lives { get; private set; }
+    public GameObject spottedCanvas;
 
-    [Header("Optional UI")]
-    [SerializeField] TextMeshProUGUI livesText;
-    [SerializeField] GameObject gameOverPanel;
-    [Header("Spam Protection")]
-    [SerializeField] float catchCooldown = 1f;
-    float lastCatchTime = -999f;
+    public bool isSpotted { get; private set; }
+
+    float baseFixedDeltaTime;
 
     void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-        Instance = this;
-    }
-
-    void Start()
-    {
-        Lives = startingLives;
-        UpdateUI();
-        if (gameOverPanel) gameOverPanel.SetActive(false);
-    }
-
-    public void PlayerCaught()
-    {
-        if (Time.time - lastCatchTime < catchCooldown) return; // avoid rapid multi-hits
-        lastCatchTime = Time.time;
-
-        Lives--;
-        UpdateUI();
-
-        if (Lives <= 0)
+        if (Instance == null)
         {
-            var scene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(scene.buildIndex);
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            baseFixedDeltaTime = Time.fixedDeltaTime;
+            if (spottedCanvas != null) spottedCanvas.SetActive(false);
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 
-    void UpdateUI()
+    public void Spotted()
     {
-        if (livesText) livesText.text = $"Lives: {Lives}";
+        if (isSpotted) return;
+        isSpotted = true;
+
+        if (spottedCanvas != null)
+            spottedCanvas.SetActive(true);
+
+        Time.timeScale = 0f;
+        Time.fixedDeltaTime = 0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void Unspotted()
+    {
+        if (!isSpotted) return;
+        isSpotted = false;
+
+        if (spottedCanvas != null)
+            spottedCanvas.SetActive(false);
+
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = baseFixedDeltaTime;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }

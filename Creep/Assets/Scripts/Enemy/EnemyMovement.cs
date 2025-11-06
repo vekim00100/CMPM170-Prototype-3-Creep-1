@@ -81,7 +81,7 @@ public class EnemyMovement : MonoBehaviour
             yield return StartCoroutine(TurnToFace(player.position));
 
             // trigger detection when facing player
-            GetComponent<EnemyDetection>()?.CheckForPlayer();
+            //GetComponent<EnemyDetection>()?.CheckForPlayer();
 
             // hold the stare
             yield return new WaitForSeconds(lookDuration);

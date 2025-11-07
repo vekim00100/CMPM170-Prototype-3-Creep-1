@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(FieldOfView))]
 public class Spotted_Handler : MonoBehaviour
 {
-    public GameObject spottedScreen; // assign your Canvas in inspector or name it "SpottedScreen"
-    public float positionThreshold = 0.2f; // increased sensitivity to avoid jitter
+    public GameObject spottedScreen; 
+    public float positionThreshold = 0.2f; 
 
     FieldOfView fov;
     Transform player;
@@ -27,6 +28,12 @@ public class Spotted_Handler : MonoBehaviour
 
     void Update()
     {
+        // Allow restart with R when an ending is reached
+        if (GlobalState.GameEnded && Input.GetKeyDown(KeyCode.R))
+        {
+            RestartGame();
+        }
+
         if (GlobalState.SpottedTriggered) return;
         if (fov == null || player == null) return;
 
@@ -47,7 +54,11 @@ public class Spotted_Handler : MonoBehaviour
             if (sqrDist > sqrThreshold)
             {
                 GlobalState.SpottedTriggered = true;
+                GlobalState.GameEnded = true;
                 Time.timeScale = 0f; // freeze game
+
+                // Pause enemy footstep audio via centralized helper
+                GlobalState.PauseEnemyFootsteps();
 
                 if (spottedScreen != null)
                     spottedScreen.SetActive(true);
@@ -63,5 +74,17 @@ public class Spotted_Handler : MonoBehaviour
             baselineSet = false;
             baselinePosition = Vector3.zero;
         }
+    }
+
+    private void RestartGame()
+    {
+        Time.timeScale = 1f;
+        GlobalState.SpottedTriggered = false;
+        GlobalState.GameEnded = false;
+
+        if (spottedScreen != null)
+            spottedScreen.SetActive(false);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

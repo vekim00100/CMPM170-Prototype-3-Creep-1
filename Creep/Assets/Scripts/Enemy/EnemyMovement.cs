@@ -34,6 +34,14 @@ public class EnemyMovement : MonoBehaviour
     {
         while (true)
         {
+            // Do not move or (re)start footsteps after the game has ended.
+            if (GlobalState.GameEnded)
+            {
+                if (footstepAudio != null && footstepAudio.isPlaying)
+                    footstepAudio.Pause();
+                yield return null;
+                continue;
+            }
             if (!isTurning && player != null)
             {
                 // calculate flat direction away from player
